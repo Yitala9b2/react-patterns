@@ -1,68 +1,60 @@
 import React, { useState, FormEvent, ChangeEvent } from 'react';
+import { IFormProps } from './types';
+import useHttp from '../../hooks/useHttpHook';
 import './style.scss';
 
-interface FormProps {
-    onUserAddition: (user: any) => void; // Принимаем функцию для обновления состояния верхнего компонента
-}
+const Form: React.FC<IFormProps> = ({ onUserAddition }) => {
 
-const Form: React.FC<FormProps> = ({ onUserAddition }) => {
-	const [username, setUsername] = useState<string>('');
-	const [phone, setPhone] = useState<string>('');
-	const [website, setWebsite] = useState<string>('');
+    const [state, setState] = useState({
+        username: "",
+        phone: "",
+        website: "",
+    });
 
-	const handleUsernameChange = (event: ChangeEvent<HTMLInputElement>) => {
-		setUsername(event.target.value);
-	};
+    const { request } = useHttp()
 
-	const handlePhoneChange = (event: ChangeEvent<HTMLInputElement>) => {
-		setPhone(event.target.value);
-	};
+    const onFieldChange = (event: any) => {
+        let value = event.target.value;
 
-	const handlewebsiteChange = (event: ChangeEvent<HTMLInputElement>) => {
-		setWebsite(event.target.value);
-	};
+        setState({ ...state, [event.target.name]: value });
+    };
 
-	const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
+    const fetchRequest = async (body: any) => {
+        const res = await request(`https://jsonplaceholder.typicode.com/users`, 'POST', JSON.stringify(body));
+        return res;
+    }
 
-		fetch('https://jsonplaceholder.typicode.com/users', {
-			method: 'POST',
-			body: JSON.stringify({
-				username,
-				phone,
-				website,
-			}),
-			headers: {
-				'Content-type': 'application/json; charset=UTF-8',
-			},
-		})
-			.then((response) => response.json())
-			.then((user) => onUserAddition(user));
-	};
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
 
-	return (
-		<form onSubmit={handleSubmit} className="form-container">
-			<div>
-				<label>
-					Username:
-					<input type="text" value={username} onChange={handleUsernameChange} />
-				</label>
-			</div>
-			<div>
-				<label>
-					Phone:
-					<input type="text" value={phone} onChange={handlePhoneChange} />
-				</label>
-			</div>
-			<div>
-				<label>
-					Website:
-					<input type="email" value={website} onChange={handlewebsiteChange} />
-				</label>
-			</div>
-			<button className='button' type="submit">Submit</button>
-		</form>
-	);
+        fetchRequest(state)
+            .then((response) => response.json())
+            .then((user) => onUserAddition(user));
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="form-container">
+            <div>
+                <label>
+                    Username:
+                    <input type="text" name='username' onChange={onFieldChange} />
+                </label>
+            </div>
+            <div>
+                <label>
+                    Phone:
+                    <input type="text" name='phone' onChange={onFieldChange} />
+                </label>
+            </div>
+            <div>
+                <label>
+                    Website:
+                    <input type="email" name='website' onChange={onFieldChange} />
+                </label>
+            </div>
+            <button className='button' type="submit">Submit</button>
+        </form>
+    );
 };
 
 export default Form;

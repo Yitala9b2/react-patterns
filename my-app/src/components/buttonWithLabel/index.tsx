@@ -1,11 +1,12 @@
+import { FC } from "react";
 import { Button } from "../button";
+import { IButtonProps } from "../button/types";
 import "./style.scss";
 
-export const ButtonWithLabel = ({ onClick, children }: { onClick: () => void, children: string }) => {
-	const text = <p style={{ marginRight: '5px' }}>нажми меня!</p>;
+export const ButtonWithLabel: FC<IButtonProps> = ({ onClick, children }) => {
 	return (
 		<div className="button-with-label">
-			{text}
+			<p className="text" >нажми меня!</p>
 			<Button onClick={onClick}>{children}</Button>
 		</div>
 	);

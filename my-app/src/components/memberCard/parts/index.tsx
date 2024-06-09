@@ -1,9 +1,9 @@
 import { FC, useEffect } from "react";
 import "../style.scss";
 
-import { UserProps } from "../types";
+import { IUserProps } from "../types";
 
-export const CardInfo: FC<UserProps> = ({ phone, username, website }) => {
+export const CardInfo: FC<IUserProps> = ({ phone, username, website }) => {
 
 	return (
 		<div className="info">
